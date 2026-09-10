@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f7fa;
+  --foreground: #17263d;
+  --solo-orange: #ff5a36;
+  --solo-blue: #2463eb;
+  --solo-yellow: #ffb800;
+  --solo-navy: #17263d;
+  --solo-muted: #60738f;
+  --solo-border: #e3eaf1;
+  --solo-light-blue: #f4f8fc;
+  --solo-soft-orange: #fff1ec;
+  --solo-soft-blue: #eef5ff;
+  --solo-soft-yellow: #fff8dd;
+  --solo-soft-green: #eaf8f1;
+  --solo-green: #16a36a;
+  --solo-soft-purple: #f3eeff;
+  --solo-purple: #7c5cfc;
 }
 
 @theme inline {
@@ -12,15 +26,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+button, a { -webkit-tap-highlight-color: transparent; }
+
+.nav-icon { display: flex; height: 36px; width: 36px; align-items: center; justify-content: center; border-radius: 10px; color: #60738f; transition: color 150ms, background-color 150ms; }
+.nav-icon:hover { background: #fff1ec; color: #ff5a36; }
+.avatar { display: flex; height: 25px; width: 25px; align-items: center; justify-content: center; border: 2px solid #fbfcfd; border-radius: 999px; font-size: 7px; font-weight: 800; color: #536373; }
+#skill-match { background: #f4f7fa; }
+#digital-profile { background: #ffffff; }
+
+@keyframes career-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.career-stage { animation: career-reveal 450ms ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .career-stage { animation: none; }
 }
