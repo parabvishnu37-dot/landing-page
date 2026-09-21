@@ -1,19 +1,31 @@
-import AIChatbot from "./components/AIChatbot";
-import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
-import Opportunities from "./components/Opportunities";
+import Hero from "./components/Hero";
+import WhatIsSolo from "./components/WhatIsSolo";
+import WhatYouCanDo from "./components/WhatYouCanDo";
+import HowSoloWorks from "./components/HowSoloWorks";
+import SoloFeatures from "./components/SoloFeatures";
+import ExploreFeatures from "./components/ExploreFeatures";
+import CareerPathExplorer from "./components/CareerPathExplorer";
 import SkillMatch from "./components/SkillMatch";
+import AIChatbot from "./components/AIChatbot";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
-import CareerPathExplorer from "./components/CareerPathExplorer";
-import SoloExperience from "./components/SoloExperience";
-import HowItWorks from "./components/HowItWorks";
-import GoalSelector from "./components/GoalSelector";
-import PlatformFeatures from "./components/PlatformFeatures";
-import ConnectedJourney from "./components/ConnectedJourney";
 
 export default function Home() {
   return (
-    <><Navbar /><Hero /><SoloExperience /><HowItWorks /><GoalSelector /><PlatformFeatures /><ConnectedJourney /><CareerPathExplorer /><AIChatbot /><Opportunities /><SkillMatch /><FinalCTA /><Footer /></>
+    <>
+      <Navbar />
+      <Hero />
+      <WhatIsSolo />
+      <WhatYouCanDo />
+      <HowSoloWorks />
+      <SoloFeatures />
+      <ExploreFeatures />
+      <CareerPathExplorer />
+      <SkillMatch />
+      <AIChatbot />
+      <FinalCTA />
+      <Footer />
+    </>
   );
 }

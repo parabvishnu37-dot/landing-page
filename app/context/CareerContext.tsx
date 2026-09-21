@@ -21,6 +21,9 @@ type CareerContextType = {
   setSkillMatch: (result: SkillMatchResult | null) => void;
   copilotPreloadQuery: string | null;
   setCopilotPreloadQuery: (query: string | null) => void;
+  isCopilotOpen: boolean;
+  setIsCopilotOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
+  openCopilot: (query?: string) => void;
 };
 
 const CareerContext = createContext<CareerContextType | undefined>(undefined);
@@ -29,9 +32,17 @@ export function CareerProvider({ children }: { children: ReactNode }) {
   const [careerPlan, setCareerPlan] = useState<CareerPlan>(EMPTY_PLAN);
   const [skillMatch, setSkillMatch] = useState<SkillMatchResult | null>(null);
   const [copilotPreloadQuery, setCopilotPreloadQuery] = useState<string | null>(null);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
 
   const clearCareerPlan = () => {
     setCareerPlan(EMPTY_PLAN);
+  };
+
+  const openCopilot = (query?: string) => {
+    setIsCopilotOpen(true);
+    if (query) {
+      setCopilotPreloadQuery(query);
+    }
   };
 
   return (
@@ -44,6 +55,9 @@ export function CareerProvider({ children }: { children: ReactNode }) {
         setSkillMatch,
         copilotPreloadQuery,
         setCopilotPreloadQuery,
+        isCopilotOpen,
+        setIsCopilotOpen,
+        openCopilot,
       }}
     >
       {children}

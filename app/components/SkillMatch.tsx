@@ -138,10 +138,6 @@ export default function SkillMatch() {
     setCopilotPreloadQuery(
       `Based on my skill match for ${selectedOpp.title} (${matchResult.matchPercentage}% match), what should I learn first?`
     );
-    const element = document.getElementById("ai-assistant");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   const unusedSuggestions = selectedOpp.suggestedSkills.filter(

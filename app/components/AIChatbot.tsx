@@ -24,7 +24,15 @@ const initialAssistantMessage: Message = {
 };
 
 export default function AIChatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+  const {
+    careerPlan,
+    skillMatch,
+    copilotPreloadQuery,
+    setCopilotPreloadQuery,
+    isCopilotOpen,
+    setIsCopilotOpen,
+  } = useCareerPlan();
+
   const [messages, setMessages] = useState<Message[]>([initialAssistantMessage]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,37 +42,35 @@ export default function AIChatbot() {
   const inputRef = useRef<HTMLInputElement>(null);
   const nextMessageId = useRef(2);
 
-  const { careerPlan, skillMatch, copilotPreloadQuery, setCopilotPreloadQuery } = useCareerPlan();
-
   // Scroll to bottom when messages update
   useEffect(() => {
-    if (isOpen) {
+    if (isCopilotOpen) {
       messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isOpen]);
+  }, [messages, isCopilotOpen]);
 
   // Focus input when opened
   useEffect(() => {
-    if (isOpen) {
+    if (isCopilotOpen) {
       setTimeout(() => inputRef.current?.focus(), 150);
     }
-  }, [isOpen]);
+  }, [isCopilotOpen]);
 
   // Close on Escape key
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && isOpen) {
-        setIsOpen(false);
+      if (event.key === "Escape" && isCopilotOpen) {
+        setIsCopilotOpen(false);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isCopilotOpen, setIsCopilotOpen]);
 
-  // Handle external queries (e.g. from SkillMatch CTA)
+  // Handle external queries (e.g. from SkillMatch CTA or Explore cards)
   useEffect(() => {
     if (copilotPreloadQuery) {
-      setIsOpen(true);
+      setIsCopilotOpen(true);
       sendMessage(copilotPreloadQuery);
       setCopilotPreloadQuery(null);
     }
@@ -168,110 +174,72 @@ export default function AIChatbot() {
     : defaultSuggestedPrompts;
 
   return (
-    <>
-      {/* 1. Compact Landing-Page Supporting Intro Block */}
-      <section
-        className="relative overflow-hidden bg-[#F5F8FC] px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
-        id="ai-assistant"
+    <aside aria-label="SOLO AI Assistant">
+      {/* Floating AI Assistant Button (Fixed Bottom-Right) */}
+      <button
+        type="button"
+        onClick={() => setIsCopilotOpen((prev) => !prev)}
+        aria-label="Open SOLO AI Career Copilot"
+        aria-expanded={isCopilotOpen}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-full bg-[#FD4322] p-3.5 text-white shadow-[0_10px_28px_rgba(253,67,34,0.36)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#e83b1c] hover:shadow-[0_14px_34px_rgba(253,67,34,0.44)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FD4322] focus-visible:ring-offset-2 sm:px-5 sm:py-3.5"
       >
-        <div className="relative mx-auto max-w-[1000px] rounded-[28px] border border-[#dbe6f1] bg-white p-8 shadow-[0_16px_40px_rgba(20,36,61,0.06)] sm:p-12">
-          <div className="flex flex-col items-center justify-between gap-8 text-center md:flex-row md:text-left">
-            <div className="max-w-[620px]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#f8d1c6] bg-[#fff1ec] px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#FD4322]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FD4322]" aria-hidden="true" />
-                MEET YOUR AI CAREER COPILOT
+        {/* AI Sparkle Icon */}
+        <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path d="m12 3 1.25 4.75L18 9l-4.75 1.25L12 15l-1.25-4.75L6 9l4.75-1.25L12 3Z" />
+          <path d="m18.5 14 .58 2.42L21.5 17l-.58 2.42L15.5 17l2.42-.58L18.5 14Z" />
+        </svg>
+        <span className="hidden text-[13px] font-black tracking-wide sm:inline">
+          SOLO AI
+        </span>
+        {/* Subtle online pulse */}
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+        </span>
+      </button>
+
+      {/* Floating Chat Popup */}
+      {isCopilotOpen && (
+        <div
+          role="dialog"
+          aria-modal="false"
+          aria-labelledby="copilot-title"
+          className="fixed bottom-24 right-4 z-50 flex h-[580px] max-h-[85vh] w-[calc(100vw-32px)] sm:w-[410px] flex-col overflow-hidden rounded-[24px] border border-[#dbe6f1] bg-white shadow-[0_24px_60px_rgba(20,36,61,0.2)] transition-all duration-200 ease-out animate-fadeIn sm:right-6"
+        >
+          {/* Popup Header */}
+          <div className="flex items-center justify-between border-b border-[#e8eef5] bg-white px-5 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff1ec] text-[#FD4322] shadow-xs">
+                <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="m12 3 1.25 4.75L18 9l-4.75 1.25L12 15l-1.25-4.75L6 9l4.75-1.25L12 3Z" />
+                  <path d="m18.5 14 .58 2.42L21.5 17l-.58 2.42L15.5 17l2.42-.58L18.5 14Z" />
+                </svg>
               </div>
-
-              <h2 className="mt-3 text-[clamp(1.9rem,3.2vw,2.6rem)] font-black leading-[1.08] tracking-[-0.04em] text-[#14243D]">
-                Need a little direction?
-              </h2>
-
-              <p className="mt-3 text-[15px] leading-7 text-[#64748B]">
-                Ask SOLO about career paths, skills, learning, projects, or your next step.
-              </p>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[13px] font-black text-[#14243D]" id="copilot-title">
+                    ✨ SOLO AI
+                  </span>
+                  <span className="rounded-full bg-[#eaf8f1] px-1.5 py-0.2 text-[8px] font-extrabold text-[#128455]">
+                    ● Online
+                  </span>
+                </div>
+                <p className="text-[10px] font-semibold text-[#64748B]">Career Copilot</p>
+              </div>
             </div>
 
+            {/* Close Button */}
             <button
               type="button"
-              onClick={() => setIsOpen(true)}
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#FD4322] px-7 py-3.5 text-[14px] font-extrabold text-white shadow-[0_8px_20px_rgba(253,67,34,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#e83b1c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FD4322] focus-visible:ring-offset-2"
+              onClick={() => setIsCopilotOpen(false)}
+              aria-label="Close Career Copilot"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#94a3b8] transition-colors hover:bg-[#F5F8FC] hover:text-[#14243D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1255FF]"
             >
-              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="m12 3 1.25 4.75L18 9l-4.75 1.25L12 15l-1.25-4.75L6 9l4.75-1.25L12 3Z" />
-                <path d="m18.5 14 .58 2.42L21.5 17l-.58 2.42L15.5 17l2.42-.58L18.5 14Z" />
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Ask SOLO AI →
             </button>
           </div>
-        </div>
-      </section>
-
-      {/* 2. Floating AI Assistant Button (Fixed Bottom-Right) */}
-      <aside aria-label="SOLO AI Assistant">
-        <button
-          type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
-          aria-label="Open SOLO AI Career Copilot"
-          aria-expanded={isOpen}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-full bg-[#FD4322] p-3.5 text-white shadow-[0_10px_28px_rgba(253,67,34,0.36)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#e83b1c] hover:shadow-[0_14px_34px_rgba(253,67,34,0.44)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FD4322] focus-visible:ring-offset-2 sm:px-5 sm:py-3.5"
-        >
-          {/* AI Sparkle Icon */}
-          <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-            <path d="m12 3 1.25 4.75L18 9l-4.75 1.25L12 15l-1.25-4.75L6 9l4.75-1.25L12 3Z" />
-            <path d="m18.5 14 .58 2.42L21.5 17l-.58 2.42L15.5 17l2.42-.58L18.5 14Z" />
-          </svg>
-          <span className="hidden text-[13px] font-black tracking-wide sm:inline">
-            SOLO AI
-          </span>
-          {/* Subtle online pulse */}
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
-          </span>
-        </button>
-
-        {/* 3. Floating Chat Popup */}
-        {isOpen && (
-          <div
-            role="dialog"
-            aria-modal="false"
-            aria-labelledby="copilot-title"
-            className="fixed bottom-24 right-4 z-50 flex h-[580px] max-h-[85vh] w-[calc(100vw-32px)] sm:w-[410px] flex-col overflow-hidden rounded-[24px] border border-[#dbe6f1] bg-white shadow-[0_24px_60px_rgba(20,36,61,0.2)] transition-all duration-200 ease-out animate-fadeIn sm:right-6"
-          >
-            {/* Popup Header */}
-            <div className="flex items-center justify-between border-b border-[#e8eef5] bg-white px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff1ec] text-[#FD4322] shadow-xs">
-                  <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="m12 3 1.25 4.75L18 9l-4.75 1.25L12 15l-1.25-4.75L6 9l4.75-1.25L12 3Z" />
-                    <path d="m18.5 14 .58 2.42L21.5 17l-.58 2.42L15.5 17l2.42-.58L18.5 14Z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[13px] font-black text-[#14243D]" id="copilot-title">
-                      ✨ SOLO AI
-                    </span>
-                    <span className="rounded-full bg-[#eaf8f1] px-1.5 py-0.2 text-[8px] font-extrabold text-[#128455]">
-                      ● Online
-                    </span>
-                  </div>
-                  <p className="text-[10px] font-semibold text-[#64748B]">Career Copilot</p>
-                </div>
-              </div>
-
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label="Close Career Copilot"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#94a3b8] transition-colors hover:bg-[#F5F8FC] hover:text-[#14243D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1255FF]"
-              >
-                <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
 
             {/* Context Badge (if user has active Career Plan or Skill Match) */}
             {(careerPlan.goal || skillMatch) && (
@@ -391,6 +359,5 @@ export default function AIChatbot() {
           </div>
         )}
       </aside>
-    </>
   );
 }

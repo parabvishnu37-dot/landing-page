@@ -11,8 +11,8 @@ type PublicNavItem = {
 
 const navItems: PublicNavItem[] = [
   { label: "Home", href: "#top", active: true },
-  { label: "Explore", href: "#career-explorer" },
-  { label: "Learner Stories", href: "#opportunities" },
+  { label: "Explore", href: "#explore" },
+  { label: "Learner Stories", href: "#how-it-works" },
   { label: "About", href: "#get-started" },
 ];
 
